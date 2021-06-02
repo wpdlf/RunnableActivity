@@ -1,12 +1,13 @@
 package com.example.runnableactivity;
 
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
-    Thread wr;
+    Thread wr, wt;
     boolean running = true;
     String TAG = "THREAD";
     String TAG2 = "THREAD2";
@@ -22,24 +23,19 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         running = true;
 
-        wr = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int i = 0;
-                for (i = 0; i < 20 && running; i++) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
-                    Log.v(TAG2, "Runnable time=" + i);
-                    Log.v(TAG, "Tread time=" + 1);
-                }
+        wt = new WorkerRunnable();
+        int i = 0;
+        for (i = 0; i < 20 && running; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
             }
-        });
+            Log.v(TAG, "Tread time=" + 1);
+        }
         wr.start();
+        wt.start();
         Log.v(TAG2, "Now I am in onStart");
     }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -52,5 +48,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.v(TAG2, "Now I am in onPause");
+    }
+
+    private class WorkerRunnable extends Thread {
+
+        @Override
+        public void run() {
+            int i = 0;
+            for (i = 0; i < 20 && running; i++) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+                Log.v(TAG2, "Runnable time=" + i);
+            }
+        }
     }
 }
